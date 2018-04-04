@@ -4,21 +4,148 @@ Author: Tanjil Ahmed
 output: pdf_document
 ---
 
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,message = FALSE)
+```
+
+```{r library, include=FALSE}
+library("tidyverse")
+library(hexbin)
+library(ggplot2)
+library(ggpmisc)
+```
+
+##**Step-1: Data loading**
+```{r data loading, echo=TRUE, results='hide'}
+surveys <- read_csv("data/portal_data_joined.csv")
+```
+
+##**Step-2: Data Cleaning**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; New Dataset is created by removing missing data (weight, hindfoot_length, sex)
+
+```{r data Processing, echo=TRUE, results='hide'}
+surveys_complete <- surveys %>%
+  filter(!is.na(weight),    
+         !is.na(hindfoot_length), 
+         !is.na(sex))             
+```
+
+##**Step-3: Data Transfromation**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rare species are omitted from final data set. Hence species frequency is counted first in descending order, rare species are then filtered out (less than 200) and finally most observed species are extracted.
+
+```{r data transform, include=FALSE}
+abun_species <- surveys_complete %>%
+  group_by(species_id) %>%
+  tally() %>%
+  arrange(desc(n)) %>%
+  filter(n > 200) %>%
+  select(species_id)
+
+surveys_abun_species <- surveys_complete %>%
+  filter(species_id %in% abun_species$species_id)
+```
+
+##**Step-4: Plots and reports**
+
+### **a. Histogram of hindfoot lengths**
+```{r plot1,echo=FALSE}
+surveys_abun_species %>% 
+  ggplot(aes(x=hindfoot_length)) + geom_histogram()
+```
+
+### **b. Boxplots of weight by sex**
+```{r plot2,echo=FALSE}
+surveys_abun_species %>%
+  ggplot(aes(x=sex, y=weight)) + geom_boxplot()
+```
+
+###**c. Scatterplots of hindfoot length vs weight for 3 species**
+```{r plot3,echo=FALSE}
+surveys_abun_species %>% filter(species_id %in% c("DM", "DO", "DS")) %>%
+  ggplot(aes(x=hindfoot_length, y=weight)) +
+  geom_point(aes(color=species_id)) + facet_grid(species_id ~ .)
+```
+
+###**d. Plot of counts in "Rodent Exclosure" plots over time**
+```{r plot5,echo=FALSE}
+counts <- surveys %>% filter(species_id == "DM") %>%
+  filter(plot_type=="Rodent Exclosure") %>%
+  group_by(year) %>%
+  tally()
+counts %>% ggplot(aes(x=year, y=n)) + geom_line()
+```
+###**e. Average weight of all the animals decreased over time**
+
+```{r plot6, echo=FALSE}
+surveys_abun_species %>%
+  group_by(year) %>%
+  summarize(mean_weight = mean(weight)) %>%
+  ggplot(aes(x = year, y = mean_weight)) +
+  geom_line()
 ```
 
 
-```{r cars}
-summary(cars)
+###**f. Average weight for each species remained constant**
+
+```{r plot7,echo=FALSE}
+surveys_abun_species %>%
+  group_by(year, species) %>%
+  summarize(mean_weight = mean(weight)) %>%
+  ggplot(aes(x = year, y = mean_weight, color = species)) +
+  geom_line() +
+  facet_wrap(~ species)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+###**g. Average weight over time**
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r plot8,echo=FALSE}
+surveys_abun_species %>%
+  group_by(year, species) %>%
+  summarize(mean_weight = mean(weight)) %>%
+  ggplot(aes(x = year, y = mean_weight, color = species)) +
+  geom_line()
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+###**h. Total weight over time**
+
+```{r plot9,echo=FALSE}
+surveys_abun_species %>%
+  group_by(year, species) %>%
+  summarize(total_weight = sum(weight)) %>%
+  ggplot(aes(x = year, y = total_weight, color = species)) +
+  geom_line()
+```
+
+###**i. All species hindfoot length trend**
+```{r plot10, echo=FALSE}
+surveys_abun_species %>%
+  group_by(year) %>%
+  summarize(mean_hinfood_length = mean(hindfoot_length)) %>%
+  ggplot(aes(x = year, y = mean_hinfood_length)) +
+  geom_line()
+```
+
+###**j. Per species hindfoot length trend**
+```{r plot11,echo=FALSE}
+
+surveys_abun_species %>%
+  group_by(year, species) %>%
+  summarize(mean_weight = mean(hindfoot_length)) %>%
+  ggplot(aes(x = year, y = mean_weight, color = species)) +
+  geom_line() +
+  facet_wrap(~ species)
+```
+
+
+
+###**k Table with counts of "DO" by plot_type in 1977**
+```{r table,echo=FALSE}
+count77 <- surveys %>% filter(species_id == "DO", year==1977) %>%
+  group_by(plot_type) %>%
+  tally() %>%
+  select(plot_type, n)
+knitr::kable(count77)
+```
