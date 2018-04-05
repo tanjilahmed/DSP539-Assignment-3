@@ -167,7 +167,7 @@ surveys_abun_species %>%
 abun_species_DM <- surveys_abun_species %>%
     filter(str_detect(species_id,'DM'))        
 ```
-###**k. hindfoot length vs weight (species id=DM)**
+###**l. hindfoot length vs weight (species id=DM)**
 
 ```{r plot12,echo=FALSE,fig.width=7.5, fig.height=3.5}
 
