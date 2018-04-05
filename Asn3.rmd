@@ -14,6 +14,7 @@ library("tidyverse")
 library(hexbin)
 library(ggplot2)
 library(ggpmisc)
+library(stringr)
 ```
 
 ##**Step-1: Data loading**
@@ -49,36 +50,55 @@ surveys_abun_species <- surveys_complete %>%
 
 ##**Step-4: Plots and reports**
 
-### **a. Histogram of hindfoot lengths**
-```{r plot1,echo=FALSE}
+###**a. Histogram of hindfoot lengths**
+
+
+```{r plot1,echo=FALSE,fig.width=7.5, fig.height=3.5}
 surveys_abun_species %>% 
-  ggplot(aes(x=hindfoot_length)) + geom_histogram()
+  ggplot(aes(x=hindfoot_length)) + geom_histogram(bins = 60)
 ```
 
-### **b. Boxplots of weight by sex**
-```{r plot2,echo=FALSE}
+###**b. Boxplots: weight by sex**
+
+
+```{r plot2,echo=FALSE,fig.width=7.5, fig.height=3.5}
 surveys_abun_species %>%
   ggplot(aes(x=sex, y=weight)) + geom_boxplot()
 ```
 
-###**c. Scatterplots of hindfoot length vs weight for 3 species**
-```{r plot3,echo=FALSE}
-surveys_abun_species %>% filter(species_id %in% c("DM", "DO", "DS")) %>%
+###**c. Scatterplots:  hindfoot length vs weight **
+
+
+```{r plot21,echo=FALSE,fig.width=7.5, fig.height=3.5}
+fit2 <- lm(surveys_abun_species$hindfoot_length ~ surveys_abun_species$weight, data = surveys_abun_species)
+ggplot(fit2$model, aes_string(x = names(fit2$model)[2], y = names(fit2$model[1]))) +
+    geom_point(alpha = 0.1, aes(color = surveys_abun_species$species_id)) +
+  stat_smooth(method = "lm", col="blue") +
+  geom_label(aes(x=0, y=65), hjust=0, label= paste("R-squared:", signif(summary(fit2)$r.squared,5),"\nP-value<",signif(2.2e-16,5)))
+
+```
+
+
+###**d. Scatterplots:  hindfoot length vs weight for 4 species**
+```{r plot3,echo=FALSE,fig.width=7.5, fig.height=3.5}
+surveys_abun_species %>% filter(species_id %in% c("PB", "DM", "NL","OT")) %>%
   ggplot(aes(x=hindfoot_length, y=weight)) +
   geom_point(aes(color=species_id)) + facet_grid(species_id ~ .)
 ```
 
-###**d. Plot of counts in "Rodent Exclosure" plots over time**
-```{r plot5,echo=FALSE}
-counts <- surveys %>% filter(species_id == "DM") %>%
+###**e. Plot: Yearly counts of 'Rodent Exclosure'**
+```{r plot5,echo=FALSE,fig.width=7.5, fig.height=3.5}
+counts <- surveys %>% 
   filter(plot_type=="Rodent Exclosure") %>%
   group_by(year) %>%
   tally()
 counts %>% ggplot(aes(x=year, y=n)) + geom_line()
 ```
-###**e. Average weight of all the animals decreased over time**
+###**f. Plot: Average weight (all animals)** 
 
-```{r plot6, echo=FALSE}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It shows decreasing trend
+
+```{r plot6, echo=FALSE,fig.width=7.5, fig.height=3.5}
 surveys_abun_species %>%
   group_by(year) %>%
   summarize(mean_weight = mean(weight)) %>%
@@ -87,9 +107,11 @@ surveys_abun_species %>%
 ```
 
 
-###**f. Average weight for each species remained constant**
+###**g. Plot: Yearly average weight (each species)** 
 
-```{r plot7,echo=FALSE}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It remains constant
+
+```{r plot7,echo=FALSE,fig.width=7.5, fig.height=3.5}
 surveys_abun_species %>%
   group_by(year, species) %>%
   summarize(mean_weight = mean(weight)) %>%
@@ -99,9 +121,9 @@ surveys_abun_species %>%
 ```
 
 
-###**g. Average weight over time**
+###**h. Plot: Yearly average weight**
 
-```{r plot8,echo=FALSE}
+```{r plot8,echo=FALSE,fig.width=7.5, fig.height=3.5}
 surveys_abun_species %>%
   group_by(year, species) %>%
   summarize(mean_weight = mean(weight)) %>%
@@ -109,9 +131,9 @@ surveys_abun_species %>%
   geom_line()
 ```
 
-###**h. Total weight over time**
+###**i. Yealy total weight by species**
 
-```{r plot9,echo=FALSE}
+```{r plot9,echo=FALSE,fig.width=7.5, fig.height=3.5}
 surveys_abun_species %>%
   group_by(year, species) %>%
   summarize(total_weight = sum(weight)) %>%
@@ -119,8 +141,8 @@ surveys_abun_species %>%
   geom_line()
 ```
 
-###**i. All species hindfoot length trend**
-```{r plot10, echo=FALSE}
+###**j. hindfoot length(All species) trend**
+```{r plot10, echo=FALSE,fig.width=7.5, fig.height=3.5}
 surveys_abun_species %>%
   group_by(year) %>%
   summarize(mean_hinfood_length = mean(hindfoot_length)) %>%
@@ -128,8 +150,8 @@ surveys_abun_species %>%
   geom_line()
 ```
 
-###**j. Per species hindfoot length trend**
-```{r plot11,echo=FALSE}
+###**k. hindfoot length(Per species) trend**
+```{r plot11,echo=FALSE,fig.width=7.5, fig.height=3.5}
 
 surveys_abun_species %>%
   group_by(year, species) %>%
@@ -141,11 +163,22 @@ surveys_abun_species %>%
 
 
 
-###**k Table with counts of "DO" by plot_type in 1977**
-```{r table,echo=FALSE}
-count77 <- surveys %>% filter(species_id == "DO", year==1977) %>%
-  group_by(plot_type) %>%
-  tally() %>%
-  select(plot_type, n)
-knitr::kable(count77)
+```{r DataExtract,echo=FALSE}
+abun_species_DM <- surveys_abun_species %>%
+    filter(str_detect(species_id,'DM'))        
 ```
+###**k. hindfoot length vs weight (species id=DM)**
+
+```{r plot12,echo=FALSE,fig.width=7.5, fig.height=3.5}
+
+fit1 <- lm(abun_species_DM$hindfoot_length ~ abun_species_DM$weight, data = abun_species_DM)
+ggplot(fit1$model, aes_string(x = names(fit1$model)[2], y = names(fit1$model[1]))) +
+    geom_point() +
+  stat_smooth(method = "lm", col="blue") +
+  geom_label(aes(x=0, y=45), hjust=0, label= paste("R-squared:", signif(summary(fit1)$r.squared,5),"\nP-value<",signif(summary(fit1)$coef[2,4],5)))
+
+```
+
+
+
+
