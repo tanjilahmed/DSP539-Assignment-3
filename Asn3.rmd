@@ -57,6 +57,7 @@ surveys_abun_species <- surveys_complete %>%
 surveys_abun_species %>% 
   ggplot(aes(x=hindfoot_length)) + geom_histogram(bins = 60)
 ```
+Highest number of species has length 36. Overall data is sparsely distributed. 
 
 ###**b. Boxplots: weight by sex**
 
@@ -66,18 +67,23 @@ surveys_abun_species %>%
   ggplot(aes(x=sex, y=weight)) + geom_boxplot()
 ```
 
+50 % species of both male and female are having weight within 50-25
+
+
 ###**c. Scatterplots:  hindfoot length vs weight **
 
 
 ```{r plot21,echo=FALSE,fig.width=7.5, fig.height=3.5}
 fit2 <- lm(surveys_abun_species$hindfoot_length ~ surveys_abun_species$weight, data = surveys_abun_species)
 ggplot(fit2$model, aes_string(x = names(fit2$model)[2], y = names(fit2$model[1]))) +
+  xlab("Weight")+
+  ylab("hindfoot_length")+
     geom_point(alpha = 0.1, aes(color = surveys_abun_species$species_id)) +
   stat_smooth(method = "lm", col="blue") +
   geom_label(aes(x=0, y=65), hjust=0, label= paste("R-squared:", signif(summary(fit2)$r.squared,5),"\nP-value<",signif(2.2e-16,5)))
 
 ```
-
+ It refelects that data are not that much correlated;  low p value rejects the null hypothesis
 
 ###**d. Scatterplots:  hindfoot length vs weight for 4 species**
 ```{r plot3,echo=FALSE,fig.width=7.5, fig.height=3.5}
@@ -161,7 +167,9 @@ surveys_abun_species %>%
   facet_wrap(~ species)
 ```
 
+Plot f-k (Interpretation):
 
+ Due to smaller rhodents captured, each species has relatively constant mean of hindfoot length and weight
 
 ```{r DataExtract,echo=FALSE}
 abun_species_DM <- surveys_abun_species %>%
@@ -173,12 +181,14 @@ abun_species_DM <- surveys_abun_species %>%
 
 fit1 <- lm(abun_species_DM$hindfoot_length ~ abun_species_DM$weight, data = abun_species_DM)
 ggplot(fit1$model, aes_string(x = names(fit1$model)[2], y = names(fit1$model[1]))) +
+  xlab("weght")+
+  ylab("hindfoot_length")+
     geom_point() +
   stat_smooth(method = "lm", col="blue") +
   geom_label(aes(x=0, y=45), hjust=0, label= paste("R-squared:", signif(summary(fit1)$r.squared,5),"\nP-value<",signif(summary(fit1)$coef[2,4],5)))
 
 ```
 
-
+Here species Dipodomys merriami has less variation and low p value also reject the null hypothesis
 
 
