@@ -5,17 +5,17 @@ Data Source: http://www.datacarpentry.org/ecology-workshop/data/
 
 This report contains following type of plots:
 
-a. Histogram of hindfoot lengths
-b. Boxplots: weight by sex
-c. Scatterplots:  hindfoot length vs weight
-d. Scatterplots:  hindfoot length vs weight for 4 species
-e. Yearly counts of 'Rodent Exclosure'
-f. Average weight (all animals)
-g. Yearly average weight (each species)
-h. Yearly average weight
-i. Yealy total weight by species
-j. Hindfoot length(All species) trend
-k. hindfoot length(Per species) trend
+a. Histogram of hindfoot lengths <br />
+b. Boxplots: weight by sex <br />
+c. Scatterplots:  hindfoot length vs weight<br />
+d. Scatterplots:  hindfoot length vs weight for 4 species<br />
+e. Yearly counts of 'Rodent Exclosure'<br />
+f. Average weight (all animals)<br />
+g. Yearly average weight (each species)<br />
+h. Yearly average weight<br />
+i. Yealy total weight by species<br />
+j. Hindfoot length(All species) trend<br />
+k. hindfoot length(Per species) trend<br />
 l. hindfoot length vs weight (species id=DM)
 
 
