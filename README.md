@@ -3,9 +3,10 @@ Working with data and writing a report using R
 
 Data Source: http://www.datacarpentry.org/ecology-workshop/data/
 
-Required R Packages:<br />
+Required R Packages (Need to install if not available):<br />
+Installation code: install.packages("Package_Name") <br />
 a. tidyverse <br />
-b. hexbin <br />
+b. hexbin <br />//
 c. ggplot2 <br />
 d. ggpmisc <br />
 e. stringr <br />
