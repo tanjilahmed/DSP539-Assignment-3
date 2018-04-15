@@ -3,7 +3,7 @@ Working with data and writing a report using R
 
 Data Source: http://www.datacarpentry.org/ecology-workshop/data/
 
-Required R Packages:
+Required R Packages:<br />
 a. tidyverse <br />
 b. hexbin <br />
 c. ggplot2 <br />
