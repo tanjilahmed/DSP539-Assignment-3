@@ -13,7 +13,7 @@ e. stringr <br />
 <br />
 **Installation code**: install.packages("Package_Name") <br />
 
-This report contains following type of plots:
+**This report contains following type of plots:**
 
 a. Histogram of hindfoot lengths <br />
 b. Boxplots: weight by sex <br />
